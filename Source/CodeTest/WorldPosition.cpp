@@ -17,11 +17,13 @@ UWorldPosition::UWorldPosition()
 // Called when the game starts
 void UWorldPosition::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	
 
-	// ...
-	UE_LOG(LogTemp,Warning, TEXT("Test"));
-	 GEngine -> AddOnScreenDebugMessage(-1,5.f,FColor::Orange, TEXT("Test"));  
+	const FString OwnerInstName = GetOwner()->GetName();
+	const FString OwnerLabel = GetOwner()->GetActorLabel();
+	
+	UE_LOG(LogTemp, Error, TEXT("OwnerInstName: %s , OwnerLabel: %s"), *OwnerInstName, * OwnerLabel);
+	GEngine -> AddOnScreenDebugMessage(-1,5.f,FColor::Orange, TEXT("Test"));  
 }
 
 
@@ -30,6 +32,12 @@ void UWorldPosition::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	const FString worldLocation = GetOwner()->GetActorLocation().ToCompactString();
+	const FString OwnerLabel = GetOwner()->GetActorLabel();
+
+	const FString displayText= OwnerLabel+" is at location: "+worldLocation;
+	
+	GEngine -> AddOnScreenDebugMessage(-1,0.f,FColor::Orange, displayText);
+	UE_LOG(LogTemp, Warning, TEXT("%s is at location: %s"),*OwnerLabel ,*worldLocation);
 }
 

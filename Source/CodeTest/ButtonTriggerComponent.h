@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "MyActorComponent.generated.h"
+#include "ButtonTriggerComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CODETEST_API UMyActorComponent : public UActorComponent
+class CODETEST_API UButtonTriggerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UMyActorComponent();
+	UButtonTriggerComponent();
 
 protected:
 	// Called when the game starts
