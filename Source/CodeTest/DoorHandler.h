@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/TriggerVolume.h"
+#include "ButtonTriggerComponent.h"
 #include "DoorHandler.generated.h"
 
 
@@ -22,9 +22,10 @@ public:
 	UPROPERTY(EditAnywhere,Category="Behaviour") float OpenCloseSpeed = 1.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 2.f;
 	
-	UPROPERTY(EditAnywhere,Category="Trigger") ATriggerVolume* OpenTrigger;
-	UPROPERTY(VisibleAnywhere,Category="Trigger") AActor* ActorThatCanTrigger;	
-	
+	UPROPERTY(EditAnywhere,Category="Trigger") AActor* OpenTrigger;
+	UPROPERTY(EditAnywhere,Category="Trigger") float RequiredWeight = 10.f;	
+
+	TArray<UButtonTriggerComponent*> ButtonTriggerComponents;
 	FRotator StartingRotation;
 	float CurrentYawAddon;
 	float LastTimeTriggered;	
@@ -35,6 +36,8 @@ protected:
 	UFUNCTION(BlueprintCallable) virtual void OpenDoor(float DeltaTime);
 	UFUNCTION(BlueprintCallable) virtual void CloseDoor(float DeltaTime);
 	UFUNCTION() void BeginOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
+	UFUNCTION() void EndOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
+	UFUNCTION() void UpdateWeight();
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

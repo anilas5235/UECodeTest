@@ -15,6 +15,7 @@ class CODETEST_API UButtonTriggerComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UButtonTriggerComponent();
+	UPROPERTY(EditAnywhere,Category="Component") float Weight = 1.f;
 
 protected:
 	// Called when the game starts
