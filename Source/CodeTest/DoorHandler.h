@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ButtonTriggerComponent.h"
+#include "WeightButtonComponent.h"
 #include "DoorHandler.generated.h"
 
 
@@ -17,15 +18,17 @@ public:
 	// Sets default values for this component's properties
 	UDoorHandler();
 
+	UPROPERTY(EditAnywhere,Category="Behaviour") USoundBase* OpenDoorSound;
+
 	UPROPERTY(VisibleAnywhere,Category="Behaviour",BlueprintReadOnly) bool IsOpening;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float TargetYaw = 90.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float OpenCloseSpeed = 1.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 2.f;
 	
-	UPROPERTY(EditAnywhere,Category="Trigger") AActor* OpenTrigger;
-	UPROPERTY(EditAnywhere,Category="Trigger") float RequiredWeight = 10.f;	
+	UPROPERTY(EditAnywhere,Category="Trigger") TArray<AActor*> ConnectedButtonsActors;
 
-	TArray<UButtonTriggerComponent*> ButtonTriggerComponents;
+	TArray<UWeightButtonComponent*> ConnectedButtons;
+	UStaticMeshComponent* MyDoor;
 	FRotator StartingRotation;
 	float CurrentYawAddon;
 	float LastTimeTriggered;	
@@ -34,12 +37,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable) virtual void OpenDoor(float DeltaTime);
-	UFUNCTION(BlueprintCallable) virtual void CloseDoor(float DeltaTime);
-	UFUNCTION() void BeginOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
-	UFUNCTION() void EndOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
-	UFUNCTION() void UpdateWeight();
+	UFUNCTION(BlueprintCallable) virtual void CloseDoor(float DeltaTime);	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-		
+	void UpdateTriggeredState();
 };
