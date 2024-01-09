@@ -2,7 +2,6 @@
 
 
 #include "DoorHandler.h"
-#include "ButtonTriggerComponent.h"
 
 // Sets default values for this component's properties
 UDoorHandler::UDoorHandler()
@@ -23,7 +22,20 @@ void UDoorHandler::BeginPlay()
 	MyDoor= GetOwner()->FindComponentByTag<UStaticMeshComponent>("door");
 	if(!MyDoor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Door was not found, add tag ´door´ to the static mesh component"));
+		UE_LOG(LogTemp, Warning, TEXT("%s : Door was not found, add tag ´door´ to the static mesh component"), *GetOwner()->GetName());
+	}
+
+	for (auto ButtonsActor : ConnectedButtonActors)
+	{
+		if(!ButtonsActor) continue;
+		UWeightButtonComponent* ButtonComponent =
+			Cast<UWeightButtonComponent>(ButtonsActor->GetComponentByClass(UWeightButtonComponent::StaticClass()));
+		if(ButtonComponent)
+		{
+			ConnectedButtons.Add(ButtonComponent);
+			ButtonComponent	->OnButtonTriggeredChanged.AddDynamic(this, &UDoorHandler::UpdateTriggeredState);
+			UE_LOG(LogTemp,Warning,TEXT("Subbed to %s"),*ButtonsActor->GetName());
+		}		
 	}
 }
 
@@ -33,31 +45,20 @@ void UDoorHandler::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
         	
 	if(IsOpening){OpenDoor(DeltaTime);}		
-	else if(GetWorld()->GetTimeSeconds() - LastTimeTriggered >= ClosingDelay){CloseDoor(DeltaTime);}
-
-	for (const auto ButtonsActor : ConnectedButtonsActors)
-	{
-		UWeightButtonComponent* ButtonComponent =
-			Cast<UWeightButtonComponent>(ButtonsActor->GetComponentByClass(UWeightButtonComponent::StaticClass()));
-		if(ButtonComponent)
-		{
-			ConnectedButtons.Add(ButtonComponent);
-            ButtonComponent	->OnButtonTriggeredChanged.AddDynamic(this, &UDoorHandler::UpdateTriggeredState);
-		}		
-	}
+	else if(GetWorld()->GetTimeSeconds() - LastTimeTriggered >= ClosingDelay){CloseDoor(DeltaTime);}	
 }
 
 void UDoorHandler::UpdateTriggeredState()
-{
+{	
 	if(ConnectedButtons.IsEmpty()) return;
 	for (const auto Button : ConnectedButtons)
 	{
 		if(Button->IsTriggered) continue;
 		IsOpening = false;
+		LastTimeTriggered = GetWorld()->GetTimeSeconds();
 		return;
 	}
 	IsOpening = true;
-	LastTimeTriggered = GetWorld()->GetTimeSeconds();
 }
 
 void UDoorHandler::OpenDoor(const float DeltaTime)

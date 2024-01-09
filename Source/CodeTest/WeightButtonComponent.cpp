@@ -46,7 +46,11 @@ void UWeightButtonComponent::UpdateWeight()
 {
 	float TotalWeight = 0;	
 	for (auto TriggerComponent : ButtonTriggerComponents){TotalWeight += TriggerComponent->Weight;}
-	IsTriggered = TotalWeight >= RequiredWeight;
-	OnButtonTriggeredChanged.Broadcast();
+	
+	if(const bool bCurrentTriggered =TotalWeight >= RequiredWeight; bCurrentTriggered != IsTriggered)
+	{
+		IsTriggered = bCurrentTriggered;
+		OnButtonTriggeredChanged.Broadcast();
+	}	
 }
 

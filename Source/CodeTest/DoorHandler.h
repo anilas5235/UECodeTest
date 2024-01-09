@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ButtonTriggerComponent.h"
 #include "WeightButtonComponent.h"
 #include "DoorHandler.generated.h"
 
@@ -25,7 +24,7 @@ public:
 	UPROPERTY(EditAnywhere,Category="Behaviour") float OpenCloseSpeed = 1.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 2.f;
 	
-	UPROPERTY(EditAnywhere,Category="Trigger") TArray<AActor*> ConnectedButtonsActors;
+	UPROPERTY(EditAnywhere,Category="Trigger") TArray<AActor*> ConnectedButtonActors;
 
 	TArray<UWeightButtonComponent*> ConnectedButtons;
 	UStaticMeshComponent* MyDoor;
@@ -41,5 +40,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void UpdateTriggeredState();
+	UFUNCTION(BlueprintCallable) void UpdateTriggeredState();
 };

@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "WeightButtonComponent.generated.h"
 
+UDELEGATE()
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTriggeredChanged);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -21,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere,Category="Behaviour") float RequiredWeight = 10.f;	
 	
 	TArray<UButtonTriggerComponent*> ButtonTriggerComponents;
-	FOnTriggeredChanged OnButtonTriggeredChanged;
+	UPROPERTY(BlueprintAssignable) FOnTriggeredChanged OnButtonTriggeredChanged;
 
 protected:
 	// Called when the game starts
