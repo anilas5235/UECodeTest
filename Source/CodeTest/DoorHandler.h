@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CompButtonRef.h"
 #include "Components/ActorComponent.h"
-#include "WeightButtonComponent.h"
 #include "DoorHandler.generated.h"
 
 
@@ -22,11 +22,10 @@ public:
 	UPROPERTY(VisibleAnywhere,Category="Behaviour",BlueprintReadOnly) bool IsOpening;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float TargetYaw = 90.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float OpenCloseSpeed = 1.f;
-	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 2.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 1.f;
 	
-	UPROPERTY(EditAnywhere,Category="Trigger") TArray<AActor*> ConnectedButtonActors;
-
-	TArray<UWeightButtonComponent*> ConnectedButtons;
+	UPROPERTY(EditAnywhere,Category="Trigger") TArray<FCompButtonRef> ConnectedButtons;
+	
 	UStaticMeshComponent* MyDoor;
 	FRotator StartingRotation;
 	float CurrentYawAddon;

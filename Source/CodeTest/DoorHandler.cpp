@@ -25,17 +25,18 @@ void UDoorHandler::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("%s : Door was not found, add tag ´door´ to the static mesh component"), *GetOwner()->GetName());
 	}
 
-	for (auto ButtonsActor : ConnectedButtonActors)
+	for (int i = 0; i < ConnectedButtons.Num(); ++i)
 	{
-		if(!ButtonsActor) continue;
-		UWeightButtonComponent* ButtonComponent =
-			Cast<UWeightButtonComponent>(ButtonsActor->GetComponentByClass(UWeightButtonComponent::StaticClass()));
-		if(ButtonComponent)
-		{
-			ConnectedButtons.Add(ButtonComponent);
-			ButtonComponent	->OnButtonTriggeredChanged.AddDynamic(this, &UDoorHandler::UpdateTriggeredState);
-			UE_LOG(LogTemp,Warning,TEXT("Subbed to %s"),*ButtonsActor->GetName());
-		}		
+		FCompButtonRef Button = ConnectedButtons[i];
+	
+		if(!Button.ButtonActor) continue;
+		Button.WeightButtonComponent =
+			Cast<UWeightButtonComponent>(Button.ButtonActor->GetComponentByClass(UWeightButtonComponent::StaticClass()));
+		if(Button.WeightButtonComponent)
+		{			
+			Button.WeightButtonComponent->OnButtonTriggeredChanged.AddDynamic(this, &UDoorHandler::UpdateTriggeredState);			
+		}
+		ConnectedButtons[i] = Button;
 	}
 }
 
@@ -50,10 +51,12 @@ void UDoorHandler::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void UDoorHandler::UpdateTriggeredState()
 {	
+	UE_LOG(LogTemp, Warning, TEXT("UpdateState"));
 	if(ConnectedButtons.IsEmpty()) return;
 	for (const auto Button : ConnectedButtons)
 	{
-		if(Button->IsTriggered) continue;
+		if(!Button.WeightButtonComponent){continue;}	
+		if(Button.WeightButtonComponent->IsTriggered == Button.ExpectedState) {continue;}
 		IsOpening = false;
 		LastTimeTriggered = GetWorld()->GetTimeSeconds();
 		return;
