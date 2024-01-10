@@ -30,7 +30,15 @@ void UWeightButtonComponent::BeginOverlap(AActor* MyOverlappedActor, AActor* Oth
 {
 	const auto Component =  Cast<UButtonTriggerComponent>(OtherActor->GetComponentByClass(UButtonTriggerComponent :: StaticClass()));
 	if(!Component) return;
-	if(!ButtonTriggerComponents.Contains(Component)) {ButtonTriggerComponents.Add(Component);}
+	if(ButtonTriggerComponents.Contains(Component)) return;
+	
+	if(Element != EElementalType::ELEMET_None)
+	{
+		if(Component->Element != Element) return;
+	}
+	
+	ButtonTriggerComponents.Add(Component);
+	
 	UpdateWeight();
 }
 

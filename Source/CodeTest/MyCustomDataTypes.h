@@ -11,21 +11,3 @@ public:
 	~MyCustomDataTypes();
 };
 
-/*
-USTRUCT(BlueprintType)
-struct FButtonValuePair
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* ButtonActor;	
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool ExpectedValue;
-
-	FButtonValuePair()		
-	{
-		ButtonActor = nullptr;
-		ExpectedValue = true;
-	}
-};*/

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ElementalType.h"
 #include "Components/ActorComponent.h"
 #include "ButtonTriggerComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CODETEST_API UButtonTriggerComponent : public UActorComponent
@@ -15,7 +15,8 @@ class CODETEST_API UButtonTriggerComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UButtonTriggerComponent();
-	UPROPERTY(EditAnywhere,Category="Component") float Weight = 1.f;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Component", meta = (ClampMin = "1.0", ClampMax = "50.0", UIMin = "1.0", UIMax = "50.0")) float Weight = 1.f;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Component") EElementalType Element;
 
 protected:
 	// Called when the game starts
@@ -23,7 +24,5 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;		
 };

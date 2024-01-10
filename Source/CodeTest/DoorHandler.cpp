@@ -3,6 +3,8 @@
 
 #include "DoorHandler.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values for this component's properties
 UDoorHandler::UDoorHandler()
 {
@@ -50,8 +52,7 @@ void UDoorHandler::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 }
 
 void UDoorHandler::UpdateTriggeredState()
-{	
-	UE_LOG(LogTemp, Warning, TEXT("UpdateState"));
+{		
 	if(ConnectedButtons.IsEmpty()) return;
 	for (const auto Button : ConnectedButtons)
 	{
@@ -62,6 +63,7 @@ void UDoorHandler::UpdateTriggeredState()
 		return;
 	}
 	IsOpening = true;
+	if(OpenDoorSound){UGameplayStatics::SpawnSoundAtLocation(this,OpenDoorSound,GetOwner()->GetActorLocation());}
 }
 
 void UDoorHandler::OpenDoor(const float DeltaTime)

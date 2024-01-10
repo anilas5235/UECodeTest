@@ -19,7 +19,8 @@ public:
 	// Sets default values for this component's properties
 	UWeightButtonComponent();
 	UPROPERTY(VisibleAnywhere,Category="Behaviour",BlueprintReadOnly) bool IsTriggered;
-	UPROPERTY(EditAnywhere,Category="Behaviour") float RequiredWeight = 10.f;	
+	UPROPERTY(EditAnywhere,Category="Behaviour",BlueprintReadWrite) float RequiredWeight = 10.f;	
+	UPROPERTY(EditAnywhere,Category="Behaviour",BlueprintReadWrite) EElementalType Element;
 	
 	TArray<UButtonTriggerComponent*> ButtonTriggerComponents;
 	UPROPERTY(BlueprintAssignable) FOnTriggeredChanged OnButtonTriggeredChanged;
