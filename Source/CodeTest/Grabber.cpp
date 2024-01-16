@@ -28,7 +28,13 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	if(MyPhysicsHandle && MyPhysicsHandle-> GrabbedComponent)
 	{
-		MyPhysicsHandle->SetTargetLocation(GetLineTraceEndPoint());
+		if(MyCamComponent)
+		{
+			const FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
+        	
+			const auto position = currentCamTransform.GetLocation() + currentCamTransform.Rotator().Vector() * HoldingDistance;
+		    MyPhysicsHandle->SetTargetLocation(position);
+		}
 	}
 }
 
@@ -39,13 +45,7 @@ void UGrabber::InitVars()
  	if(!MyPhysicsHandle)
  	{
  		UE_LOG(LogTemp, Warning, TEXT("Grabber there is not Phyisics"));
- 	}
- 	MyInputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
- 	if(MyInputComponent)
- 	{
- 		MyInputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
- 		MyInputComponent->BindAction("Grab", IE_Released, this, &UGrabber::ReleaseGrab);
- 	}
+ 	} 	
  	MyCamComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
  	if(!MyCamComponent)
  	{
@@ -67,17 +67,14 @@ FVector UGrabber::GetLineTraceEndPoint()
 
 void UGrabber::Grab()
 {
-	if(!MyPhysicsHandle) return;
-	//UE_LOG(LogTemp, Warning, TEXT("Grab"));
+	if(!MyPhysicsHandle) return;	
 
 	if(!MyPhysicsHandle-> GrabbedComponent)
 	{
 		FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
         	
-		FVector TraceEnd = GetLineTraceEndPoint();	
-        
-		//DrawDebugLine(GetWorld(), currentCamTransform.GetLocation(),TraceEnd,FColor(1,0,0),false,1.f,0,.5f);
-        
+		FVector TraceEnd = GetLineTraceEndPoint();	      
+		
 		FHitResult Hit;
 		FCollisionQueryParams TraceParams(FName(TEXT("")),false,GetOwner());
         
@@ -85,17 +82,15 @@ void UGrabber::Grab()
 			currentCamTransform.GetLocation(),TraceEnd,FCollisionObjectQueryParams(ECC_PhysicsBody),TraceParams);
         
 		if(Hit.GetActor())
-		{		
-			//UE_LOG(LogTemp, Warning, TEXT(" %s was hit"), *(Hit.GetActor()->GetName()));
-			MyPhysicsHandle->GrabComponentAtLocation(Hit.GetComponent(),NAME_None,TraceEnd);			
-		}
+		{			
+			MyPhysicsHandle->GrabComponentAtLocation(Hit.GetComponent(),NAME_None,Hit.Location);			
+		}	
 	}	
 }
 
 void UGrabber::ReleaseGrab()
 {
-	if(!MyPhysicsHandle) return;
-	//UE_LOG(LogTemp, Warning, TEXT("Grab Release"));
+	if(!MyPhysicsHandle) return;	
 	
 	if(MyPhysicsHandle-> GrabbedComponent)
 	{

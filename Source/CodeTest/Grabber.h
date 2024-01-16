@@ -17,7 +17,8 @@ class CODETEST_API UGrabber : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UGrabber();		
-	UPROPERTY(EditAnywhere,Category="Behaviour") float GrabbingReach = 200.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour", BlueprintReadWrite) float GrabbingReach = 200.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour", BlueprintReadWrite) float HoldingDistance = 200.f;
 	UPhysicsHandleComponent* MyPhysicsHandle = nullptr;
 	UCameraComponent* MyCamComponent = nullptr;
 	UInputComponent* MyInputComponent = nullptr;
@@ -34,7 +35,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void Grab();
-	void ReleaseGrab();
+	UFUNCTION(BlueprintCallable) void Grab();
+	UFUNCTION(BlueprintCallable) void ReleaseGrab();
 		
 };
