@@ -19,10 +19,9 @@ void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();	
 
-	const FString OwnerInstName = GetOwner()->GetName();
-	const FString OwnerLabel = GetOwner()->GetActorLabel();
+	const FString OwnerInstName = GetOwner()->GetName();	
 	
-	UE_LOG(LogTemp, Error, TEXT("OwnerInstName: %s , OwnerLabel: %s"), *OwnerInstName, * OwnerLabel);
+	UE_LOG(LogTemp, Error, TEXT("OwnerInstName: %s"), *OwnerInstName);
 	GEngine -> AddOnScreenDebugMessage(-1,5.f,FColor::Orange, TEXT("Test"));  
 }
 
@@ -31,13 +30,13 @@ void UWorldPosition::BeginPlay()
 void UWorldPosition::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+    /*
 	const FString worldLocation = GetOwner()->GetActorLocation().ToCompactString();
 	const FString OwnerLabel = GetOwner()->GetActorLabel();
 
 	const FString displayText= OwnerLabel+" is at location: "+worldLocation;
 	
 	GEngine -> AddOnScreenDebugMessage(-1,0.f,FColor::Orange, displayText);
-	UE_LOG(LogTemp, Warning, TEXT("%s is at location: %s"),*OwnerLabel ,*worldLocation);
+	UE_LOG(LogTemp, Warning, TEXT("%s is at location: %s"),*OwnerLabel ,*worldLocation);*/
 }
 
