@@ -7,6 +7,14 @@
 #include "Components/ActorComponent.h"
 #include "DoorHandler.generated.h"
 
+UENUM(BlueprintType)
+enum class EDoorBehaviourType : uint8
+{
+	DoorType_Hinge      UMETA(DisplayName = "HingeDoor"),
+	DoorType_Vertical   UMETA(DisplayName = "VerticalDoor"),
+	DoorType_Horizontal UMETA(DisplayName = "HorizontalDoor"),	
+};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CODETEST_API UDoorHandler : public UActorComponent
@@ -16,19 +24,29 @@ class CODETEST_API UDoorHandler : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UDoorHandler();
-
-	UPROPERTY(EditAnywhere,Category="Behaviour") USoundBase* OpenDoorSound;
-
-	UPROPERTY(VisibleAnywhere,Category="Behaviour",BlueprintReadOnly) bool IsOpening;
-	UPROPERTY(EditAnywhere,Category="Behaviour") float TargetYaw = 90.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour") EDoorBehaviourType DoorType;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float OpenCloseSpeed = 1.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour") float ClosingDelay = 1.f;
+	
+	UPROPERTY(EditAnywhere,Category="Behaviour",meta = (EditCondition = "DoorType == EDoorBehaviourType::DoorType_Hinge ", EditConditionHides))
+	float TargetYaw = 90.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour",meta = (EditCondition = "DoorType == EDoorBehaviourType::DoorType_Vertical", EditConditionHides))
+	float TargetVerticalDifference = 200.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour",meta = (EditCondition = "DoorType == EDoorBehaviourType::DoorType_Horizontal", EditConditionHides))
+	float TargetHorizontalDifference = 200.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour",meta = (EditCondition = "DoorType == EDoorBehaviourType::DoorType_Horizontal", EditConditionHides))
+	bool SlideOnRelativeY = false;
+	
+	UPROPERTY(EditAnywhere,Category="Sound") USoundBase* OpenDoorSound;
+	
+	UPROPERTY(VisibleAnywhere,Category="Status",BlueprintReadOnly) bool IsOpening;
 	
 	UPROPERTY(EditAnywhere,Category="Trigger") TArray<FCompButtonRef> ConnectedButtons;
 	
 	UStaticMeshComponent* MyDoor;
-	FRotator StartingRotation;
-	float CurrentYawAddon;
+	FTransform StartingTransform;	
+	float CurrentYawAddon;	
+	FVector CurrentPositionAddon = FVector(0,0,0);
 	float LastTimeTriggered;	
 	
 protected:

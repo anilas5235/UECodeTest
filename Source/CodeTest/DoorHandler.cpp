@@ -18,13 +18,17 @@ UDoorHandler::UDoorHandler()
 // Called when the game starts
 void UDoorHandler::BeginPlay()
 {
-	Super::BeginPlay();	
-	StartingRotation =GetOwner()->GetActorRotation();
+	Super::BeginPlay();		
 
 	MyDoor= GetOwner()->FindComponentByTag<UStaticMeshComponent>("door");
 	if(!MyDoor)
 	{
+		StartingTransform = GetOwner()->GetTransform();
 		UE_LOG(LogTemp, Warning, TEXT("%s : Door was not found, add tag ´door´ to the static mesh component"), *GetOwner()->GetName());
+	}
+	else
+	{
+		StartingTransform = MyDoor->GetComponentTransform();
 	}
 
 	for (int i = 0; i < ConnectedButtons.Num(); ++i)
@@ -47,8 +51,10 @@ void UDoorHandler::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
         	
+	//UE_LOG(LogTemp,Warning,TEXT("Position Addon: %s"),*CurrentPositionAddon.ToCompactString());
 	if(IsOpening){OpenDoor(DeltaTime);}		
-	else if(GetWorld()->GetTimeSeconds() - LastTimeTriggered >= ClosingDelay){CloseDoor(DeltaTime);}	
+	else if(GetWorld()->GetTimeSeconds() - LastTimeTriggered >= ClosingDelay){CloseDoor(DeltaTime);}
+
 }
 
 void UDoorHandler::UpdateTriggeredState()
@@ -67,20 +73,73 @@ void UDoorHandler::UpdateTriggeredState()
 }
 
 void UDoorHandler::OpenDoor(const float DeltaTime)
-{	
-	CurrentYawAddon = FMath:: Lerp(CurrentYawAddon,TargetYaw,OpenCloseSpeed*DeltaTime);
-	FRotator NextRotation = StartingRotation;
-	NextRotation.Yaw += CurrentYawAddon;
-	if(MyDoor){MyDoor->SetWorldRotation(NextRotation);}
-    else{GetOwner()->SetActorRotation(NextRotation);}
-	
+{
+	switch (DoorType)
+	{
+	case EDoorBehaviourType::DoorType_Hinge:
+		CurrentYawAddon = FMath:: Lerp(CurrentYawAddon,TargetYaw,OpenCloseSpeed*DeltaTime);			
+		if(MyDoor){MyDoor->SetRelativeRotation(StartingTransform.Rotator() + FRotator(0,CurrentYawAddon,0));}
+		else{GetOwner()->SetActorRotation(StartingTransform.Rotator() + FRotator(0,CurrentYawAddon,0));}
+		break;
+	case EDoorBehaviourType::DoorType_Vertical:
+		CurrentPositionAddon.Z = FMath:: Lerp(CurrentPositionAddon.Z,TargetVerticalDifference,OpenCloseSpeed*DeltaTime);		
+		if(MyDoor){MyDoor->SetRelativeLocation(CurrentPositionAddon);}
+		else
+		{					
+			GetOwner()->SetActorLocation(StartingTransform.GetLocation() + CurrentPositionAddon);
+		}
+		break;
+	case EDoorBehaviourType::DoorType_Horizontal:
+		if(SlideOnRelativeY)
+		{
+			CurrentPositionAddon.Y =  FMath:: Lerp(CurrentPositionAddon.Y,TargetHorizontalDifference,OpenCloseSpeed*DeltaTime);			
+		}
+		else
+		{
+			CurrentPositionAddon.X =  FMath:: Lerp(CurrentPositionAddon.X,TargetHorizontalDifference,OpenCloseSpeed*DeltaTime);			
+		}		
+		if(MyDoor){MyDoor->SetRelativeLocation(CurrentPositionAddon);}
+		else
+		{					
+			GetOwner()->SetActorLocation(StartingTransform.GetLocation() + CurrentPositionAddon);
+		}
+		break;
+	default: ;
+	}
 }
 
 void UDoorHandler::CloseDoor(const float DeltaTime)
 {	
-	CurrentYawAddon =FMath:: Lerp(CurrentYawAddon,0,OpenCloseSpeed * DeltaTime);
-	FRotator NextRotation = StartingRotation;
-	NextRotation.Yaw +=CurrentYawAddon;
-	if(MyDoor){MyDoor->SetWorldRotation(NextRotation);}
-	else{GetOwner()->SetActorRotation(NextRotation);}
+	switch (DoorType) {
+	case EDoorBehaviourType::DoorType_Hinge:
+		CurrentYawAddon =FMath:: Lerp(CurrentYawAddon,0,OpenCloseSpeed * DeltaTime);		
+		if(MyDoor){MyDoor->SetRelativeRotation(StartingTransform.Rotator() + FRotator(0,CurrentYawAddon,0));}
+		else{GetOwner()->SetActorRotation(StartingTransform.Rotator() + FRotator(0,CurrentYawAddon,0));}
+		break;
+	case EDoorBehaviourType::DoorType_Vertical:
+
+		CurrentPositionAddon.Z =  FMath:: Lerp(CurrentPositionAddon.Z,0,OpenCloseSpeed*DeltaTime);		
+		if(MyDoor){MyDoor->SetRelativeLocation(CurrentPositionAddon);}
+		else
+		{					
+			GetOwner()->SetActorLocation(StartingTransform.GetLocation() + CurrentPositionAddon);
+		}		
+		break;
+	case EDoorBehaviourType::DoorType_Horizontal:
+		if(SlideOnRelativeY)
+		{
+			CurrentPositionAddon.Y =  FMath:: Lerp(CurrentPositionAddon.Y,0,OpenCloseSpeed*DeltaTime);			
+		}
+		else
+		{
+			CurrentPositionAddon.X =  FMath:: Lerp(CurrentPositionAddon.X,0,OpenCloseSpeed*DeltaTime);			
+		}		
+		if(MyDoor){MyDoor->SetRelativeLocation(CurrentPositionAddon);}
+		else
+		{					
+			GetOwner()->SetActorLocation(StartingTransform.GetLocation() + CurrentPositionAddon);
+		}
+		break;
+	default: ;
+	}
 }

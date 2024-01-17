@@ -19,14 +19,15 @@ public:
 	UGrabber();		
 	UPROPERTY(EditAnywhere,Category="Behaviour", BlueprintReadWrite) float GrabbingReach = 200.f;
 	UPROPERTY(EditAnywhere,Category="Behaviour", BlueprintReadWrite) float HoldingDistance = 200.f;
+	UPROPERTY(EditAnywhere,Category="Behaviour", BlueprintReadWrite,meta = (ClampMin = "0.0", ClampMax = "5.0", UIMin = "0.0", UIMax = "1.0"))
+	float VelocityScaleAfterRelease = .2f;
+	
 	UPhysicsHandleComponent* MyPhysicsHandle = nullptr;
 	UCameraComponent* MyCamComponent = nullptr;
 	UInputComponent* MyInputComponent = nullptr;
 
 private:
 	void InitVars();
-	FVector GetLineTraceEndPoint();
-	
 
 protected:
 	// Called when the game starts

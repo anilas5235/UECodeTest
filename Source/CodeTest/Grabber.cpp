@@ -26,21 +26,16 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if(MyPhysicsHandle && MyPhysicsHandle-> GrabbedComponent)
+	if(!MyPhysicsHandle || !MyPhysicsHandle-> GrabbedComponent)return;
+	if(MyCamComponent)
 	{
-		if(MyCamComponent)
-		{
-			const FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
-        	
-			const auto position = currentCamTransform.GetLocation() + currentCamTransform.Rotator().Vector() * HoldingDistance;
-		    MyPhysicsHandle->SetTargetLocation(position);
-		}
+		const FTransform currentCamTransform =MyCamComponent->GetComponentTransform();
+		MyPhysicsHandle->SetTargetLocation(currentCamTransform.GetLocation()+currentCamTransform.Rotator().Vector() * HoldingDistance);
 	}
 }
 
 void UGrabber::InitVars()
- {
- 	
+ { 	
  	MyPhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
  	if(!MyPhysicsHandle)
  	{
@@ -53,18 +48,6 @@ void UGrabber::InitVars()
  	}
  }
 
-FVector UGrabber::GetLineTraceEndPoint()
-{
-	if(MyCamComponent)
-	{
-		const FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
-        	
-		return  currentCamTransform.GetLocation() + currentCamTransform.Rotator().Vector() * GrabbingReach;
-	}
-
-	return FVector(0,0,0);
-}
-
 void UGrabber::Grab()
 {
 	if(!MyPhysicsHandle) return;	
@@ -73,7 +56,7 @@ void UGrabber::Grab()
 	{
 		FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
         	
-		FVector TraceEnd = GetLineTraceEndPoint();	      
+		FVector TraceEnd = currentCamTransform.GetLocation() + currentCamTransform.Rotator().Vector() * GrabbingReach;  
 		
 		FHitResult Hit;
 		FCollisionQueryParams TraceParams(FName(TEXT("")),false,GetOwner());
@@ -90,11 +73,12 @@ void UGrabber::Grab()
 
 void UGrabber::ReleaseGrab()
 {
-	if(!MyPhysicsHandle) return;	
-	
-	if(MyPhysicsHandle-> GrabbedComponent)
+	if(!MyPhysicsHandle) return;
+
+	if(const auto grabbedComponent = MyPhysicsHandle-> GrabbedComponent)
 	{
 		MyPhysicsHandle->ReleaseComponent();
+		grabbedComponent->SetPhysicsLinearVelocity(grabbedComponent->GetPhysicsLinearVelocity() * VelocityScaleAfterRelease);
 	}	
 }
 
