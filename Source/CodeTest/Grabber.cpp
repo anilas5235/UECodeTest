@@ -8,7 +8,7 @@
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {	
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;	
 }
 
 // Called when the game starts
@@ -27,56 +27,54 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	if(!MyPhysicsHandle || !MyPhysicsHandle-> GrabbedComponent)return;
 	if(MyCamComponent)
 	{
-		const FTransform currentCamTransform =MyCamComponent->GetComponentTransform();
-		MyPhysicsHandle->SetTargetLocation(currentCamTransform.GetLocation()+currentCamTransform.Rotator().Vector() * HoldingDistance);
+		const FTransform CurrentCamTransform =MyCamComponent->GetComponentTransform();
+		MyPhysicsHandle->SetTargetLocation(CurrentCamTransform.GetLocation()+CurrentCamTransform.Rotator().Vector() * HoldingDistance);
 	}
 }
 
 void UGrabber::InitVars()
  { 	
  	MyPhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
- 	if(!MyPhysicsHandle)
- 	{
- 		UE_LOG(LogTemp, Warning, TEXT("Grabber there is not Phyisics"));
- 	} 	
+ 	if(!MyPhysicsHandle){UE_LOG(LogTemp, Warning, TEXT("GrabberComponent: there is no PhyisicsHandle on this Actor"));} 	
  	MyCamComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
- 	if(!MyCamComponent)
- 	{
- 		UE_LOG(LogTemp, Warning, TEXT("Cam not found"));
- 	}
+ 	if(!MyCamComponent){UE_LOG(LogTemp, Warning, TEXT("GrabberComponent: No CameraComponent found on this actor"));}
  }
 
-void UGrabber::Grab()
+void UGrabber::Grab() const
 {
-	if(!MyPhysicsHandle) return;	
-
-	if(!MyPhysicsHandle-> GrabbedComponent)
-	{
-		FTransform currentCamTransform =MyCamComponent->GetComponentTransform();		
+	FTransform CurrentCamTransform =MyCamComponent->GetComponentTransform();		
         	
-		FVector TraceEnd = currentCamTransform.GetLocation() + currentCamTransform.Rotator().Vector() * GrabbingReach;  
+	FVector TraceEnd = CurrentCamTransform.GetLocation() + CurrentCamTransform.Rotator().Vector() * GrabbingReach;  
 		
-		FHitResult Hit;
-		FCollisionQueryParams TraceParams(FName(TEXT("")),false,GetOwner());
+	FHitResult Hit;
+	FCollisionQueryParams TraceParams(FName(TEXT("")),false,GetOwner());
         
-		GetWorld() -> LineTraceSingleByObjectType(OUT Hit,
-			currentCamTransform.GetLocation(),TraceEnd,FCollisionObjectQueryParams(ECC_PhysicsBody),TraceParams);
+	GetWorld() -> LineTraceSingleByObjectType(OUT Hit,
+		CurrentCamTransform.GetLocation(),TraceEnd,FCollisionObjectQueryParams(ECC_PhysicsBody),TraceParams);
         
-		if(Hit.GetActor())
-		{			
-			MyPhysicsHandle->GrabComponentAtLocation(Hit.GetComponent(),NAME_None,Hit.Location);			
-		}	
-	}	
+	GrabObj(Hit);
 }
 
-void UGrabber::ReleaseGrab()
+void UGrabber::GrabObj(const FHitResult HitResult) const
+{
+	if(!MyPhysicsHandle) return;	
+	if(MyPhysicsHandle-> GrabbedComponent) return;
+	if(const auto TargetActor = HitResult.GetActor(); !TargetActor) return;
+	USceneComponent* Comp = Cast<USceneComponent>(HitResult.GetActor()->FindComponentByClass(USceneComponent::StaticClass()));
+	if(Comp && Comp->IsSimulatingPhysics())		
+	{
+		MyPhysicsHandle->GrabComponentAtLocation(Cast<UPrimitiveComponent>(Comp),NAME_None,HitResult.Location);
+	}
+}
+
+void UGrabber::ReleaseGrab() const
 {
 	if(!MyPhysicsHandle) return;
 
-	if(const auto grabbedComponent = MyPhysicsHandle-> GrabbedComponent)
+	if(const auto GrabbedComponent = MyPhysicsHandle-> GrabbedComponent)
 	{
 		MyPhysicsHandle->ReleaseComponent();
-		grabbedComponent->SetPhysicsLinearVelocity(grabbedComponent->GetPhysicsLinearVelocity() * VelocityScaleAfterRelease);
+		GrabbedComponent->SetPhysicsLinearVelocity(GrabbedComponent->GetPhysicsLinearVelocity() * VelocityScaleAfterRelease);
 	}	
 }
 
