@@ -43,7 +43,7 @@ public:
 	
 	
 	UPROPERTY(EditAnywhere,Category="DoorBehaviour") TArray<FCompButtonRef> ConnectedButtons;
-	UPROPERTY(VisibleAnywhere,Category="DoorBehaviour",BlueprintReadOnly) bool IsOpening;
+	UPROPERTY(EditAnywhere,Category="DoorBehaviour",BlueprintReadWrite) bool IsOpening;
 	UPROPERTY(EditAnywhere,Category="DoorBehaviour") USoundBase* OpenDoorSound;
 	
 	
