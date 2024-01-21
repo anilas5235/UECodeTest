@@ -63,7 +63,7 @@ void UGrabber::GrabObj(const FHitResult HitResult) const
 	USceneComponent* Comp = Cast<USceneComponent>(HitResult.GetActor()->FindComponentByClass(USceneComponent::StaticClass()));
 	if(Comp && Comp->IsSimulatingPhysics())		
 	{
-		MyPhysicsHandle->GrabComponentAtLocation(Cast<UPrimitiveComponent>(Comp),NAME_None,HitResult.Location);
+		MyPhysicsHandle->GrabComponentAtLocation(Cast<UPrimitiveComponent>(Comp),NAME_None,HitResult.Location);		
 	}
 }
 
