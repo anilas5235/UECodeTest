@@ -3,10 +3,3 @@
 
 #include "MyCustomDataTypes.h"
 
-MyCustomDataTypes::MyCustomDataTypes()
-{
-}
-
-MyCustomDataTypes::~MyCustomDataTypes()
-{
-}
