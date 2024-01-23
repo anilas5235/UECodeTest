@@ -30,15 +30,15 @@ void UAudioSettingsWindow::NativePreConstruct()
 	Super::NativePreConstruct();
 }
 
-void UAudioSettingsWindow::OnWindowOpen_Implementation()
+void UAudioSettingsWindow::OnWindowOpen()
 {
-	IUIWindow::OnWindowOpen_Implementation();
+	Super::OnWindowOpen();
 }
 
-void UAudioSettingsWindow::OnWindowClose_Implementation()
+void UAudioSettingsWindow::OnWindowClose()
 {
-	IUIWindow::OnWindowClose_Implementation();
-	SaveSettings();	
+	Super::OnWindowClose();
+	SaveSettings();
 }
 
 void UAudioSettingsWindow::SubToSliderEvents()

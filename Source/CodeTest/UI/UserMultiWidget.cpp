@@ -12,7 +12,7 @@ void UUserMultiWidget::NativeConstruct()
 	for (const auto WidgetClass : WidgetClasses)
 	{
 		const auto NewWidget =CreateWidget(this,WidgetClass);
-		CreatedWidgets.Add(NewWidget);
+		CreatedWidgets.Add(Cast<UUIWindowWidget>(NewWidget));
 		MyWidgetSwitcher->AddChild(NewWidget);
 	}
 
@@ -20,47 +20,41 @@ void UUserMultiWidget::NativeConstruct()
 	else{SwitchWidget(StartIndex);}	
 }
 
-void UUserMultiWidget::OnWindowOpen_Implementation()
-{
-	IUIWindow::OnWindowOpen_Implementation();
-}
-
-void UUserMultiWidget::OnWindowClose_Implementation()
-{
-	IUIWindow::OnWindowClose_Implementation();
-}
-
-void UUserMultiWidget::ChangeActiveState(const bool NewState)
-{
-	if(IsActive == NewState)return;
-	IsActive = NewState;
-	SetVisibility(IsActive?ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	OnWindowActiveStateChanged.Broadcast();
-}
-
 void UUserMultiWidget::SwitchWidget(const int Index)
 {	
 	if(Index <-1 || Index >= CreatedWidgets.Num() || Index == CurrentlyActiveIndex)return;
 
-	if(const auto Inter = Cast<IUIWindow>(CurrentlyActiveWidget)){Inter->OnWindowClose();}		
+	if(CurrentlyActiveWidget) CurrentlyActiveWidget->OnWindowClose();	
 
-	if(Index == -1)
-	{		
-		ChangeActiveState(false);
-		return;
-	}
-
-	if(CurrentlyActiveIndex ==-1){ChangeActiveState(true);}
+	if(Index == -1)	{ChangeActiveState(false);}	
+	if(CurrentlyActiveIndex ==-1){ChangeActiveState(true);}	
 
 	CurrentlyActiveIndex = Index;
-	CurrentlyActiveWidget = CreatedWidgets[Index];
 
-	MyWidgetSwitcher->SetActiveWidgetIndex(CurrentlyActiveIndex);
-
-	if(const auto Inter = Cast<IUIWindow>(CurrentlyActiveWidget)){Inter->OnWindowOpen();}		
+	if(CurrentlyActiveIndex >=0)
+	{
+		CurrentlyActiveWidget = CreatedWidgets[CurrentlyActiveIndex];
+		CurrentlyActiveWidget->OnWindowOpen();
+		MyWidgetSwitcher->SetActiveWidgetIndex(CurrentlyActiveIndex);
+	}
+	else
+	{
+		CurrentlyActiveWidget = nullptr;
+	}	
 }
 
 void UUserMultiWidget::SwitchToEmpty()
 {
 	SwitchWidget(-1);
 }
+
+void UUserMultiWidget::OnWindowOpen()
+{
+	Super::OnWindowOpen();
+}
+
+void UUserMultiWidget::OnWindowClose()
+{
+	Super::OnWindowClose();
+}
+

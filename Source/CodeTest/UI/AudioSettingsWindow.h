@@ -3,15 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UIWindow.h"
-#include "Blueprint/UserWidget.h"
+#include "UIWindowWidget.h"
 #include "CodeTest/MyCustomDataTypes.h"
 #include "GameFramework/SaveGame.h"
 #include "AudioSettingsWindow.generated.h"
 
-/**
- * 
- */
+ 
 UCLASS(BlueprintType)
    class UAudioSave : public USaveGame
 {
@@ -22,7 +19,7 @@ public:
 };
 
 UCLASS()
-class CODETEST_API UAudioSettingsWindow : public UUserWidget, public IUIWindow
+class CODETEST_API UAudioSettingsWindow : public UUIWindowWidget
 {
 	GENERATED_BODY()
 
@@ -38,12 +35,10 @@ protected:
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void NativePreConstruct() override;	
+	virtual void NativePreConstruct() override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void OnWindowOpen(); virtual void OnWindowOpen_Implementation() override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void OnWindowClose(); virtual void OnWindowClose_Implementation() override;
+	virtual void OnWindowOpen() override;
+	virtual void OnWindowClose() override;
 
 protected:
 	void SubToSliderEvents();
