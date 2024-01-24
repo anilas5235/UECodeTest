@@ -16,4 +16,3 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly) USoundClass* SoundClass;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly) USoundMix* SoundMixer;
 };
-
