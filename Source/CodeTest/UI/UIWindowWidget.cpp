@@ -3,12 +3,19 @@
 
 #include "UIWindowWidget.h"
 
+void UUIWindowWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	SetIsFocusable(true);
+}
+
 void UUIWindowWidget::OnWindowClose()
 {
 }
 
 void UUIWindowWidget::OnWindowOpen()
 {
+	SetFocus();
 }
 
 void UUIWindowWidget::ChangeActiveState(bool NewState)

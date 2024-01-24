@@ -33,6 +33,7 @@ void UAudioSettingsWindow::NativePreConstruct()
 void UAudioSettingsWindow::OnWindowOpen()
 {
 	Super::OnWindowOpen();
+	LoadSettings();
 }
 
 void UAudioSettingsWindow::OnWindowClose()

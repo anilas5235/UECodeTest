@@ -12,7 +12,7 @@ struct  CODETEST_API FAudioSliderData
 	GENERATED_BODY();
 
 public:	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly) TSubclassOf<USlider> Slider;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly) USlider* Slider;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly) USoundClass* SoundClass;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly) USoundMix* SoundMixer;
 };

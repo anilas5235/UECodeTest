@@ -19,6 +19,8 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UIWindowWidget") UUIWindowWidget* ParentWindowWidget = nullptr;
 	UPROPERTY(BlueprintAssignable,BlueprintCallable,Category="UIWindowWidget") FOnActiveStateChanged OnActiveStateChanged;
 
+	virtual void NativeConstruct() override;
+
 public:	
 	UFUNCTION(BlueprintCallable,Category="UIWindowWidget")virtual void OnWindowClose();
 	UFUNCTION(BlueprintCallable,Category="UIWindowWidget")virtual void OnWindowOpen();

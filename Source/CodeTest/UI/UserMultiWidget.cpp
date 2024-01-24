@@ -4,7 +4,7 @@
 #include "UserMultiWidget.h"
 
 void UUserMultiWidget::NativeConstruct()
-{
+{	
 	Super::NativeConstruct();	
 	
 	if(WidgetClasses.IsEmpty()){ UE_LOG(LogTemp,Warning,TEXT("MultiWiget: there are no Widget Classes selected!"));return;}	
@@ -54,6 +54,7 @@ void UUserMultiWidget::SwitchToEmpty()
 void UUserMultiWidget::OnWindowOpen()
 {
 	Super::OnWindowOpen();
+	SwitchWidget(0);
 }
 
 void UUserMultiWidget::OnWindowClose()
