@@ -15,6 +15,6 @@ void UUIWindowWidget::ChangeActiveState(bool NewState)
 {
 	if(IsActive == NewState)return;
 	IsActive = NewState;
-	OnWindowActiveStateChanged.Broadcast();
+	OnActiveStateChanged.Broadcast();
 	SetVisibility(IsActive?ESlateVisibility::Visible:ESlateVisibility::Collapsed);
 }

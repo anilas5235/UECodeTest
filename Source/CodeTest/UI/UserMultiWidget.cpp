@@ -11,8 +11,9 @@ void UUserMultiWidget::NativeConstruct()
 
 	for (const auto WidgetClass : WidgetClasses)
 	{
-		const auto NewWidget =CreateWidget(this,WidgetClass);
-		CreatedWidgets.Add(Cast<UUIWindowWidget>(NewWidget));
+		const auto NewWidget =Cast<UUIWindowWidget>(CreateWidget(this,WidgetClass));
+		NewWidget->ParentWindowWidget = this;
+		CreatedWidgets.Add(NewWidget);
 		MyWidgetSwitcher->AddChild(NewWidget);
 	}
 
@@ -26,8 +27,8 @@ void UUserMultiWidget::SwitchWidget(const int Index)
 
 	if(CurrentlyActiveWidget) CurrentlyActiveWidget->OnWindowClose();	
 
-	if(Index == -1)	{ChangeActiveState(false);}	
-	if(CurrentlyActiveIndex ==-1){ChangeActiveState(true);}	
+	if(Index <0){ChangeActiveState(false);}	
+	if(CurrentlyActiveIndex <0){ChangeActiveState(true);}	
 
 	CurrentlyActiveIndex = Index;
 
@@ -39,8 +40,10 @@ void UUserMultiWidget::SwitchWidget(const int Index)
 	}
 	else
 	{
-		CurrentlyActiveWidget = nullptr;
-	}	
+		CurrentlyActiveWidget = nullptr;		
+	}
+	
+	OnActiveWindowChanged.Broadcast();
 }
 
 void UUserMultiWidget::SwitchToEmpty()

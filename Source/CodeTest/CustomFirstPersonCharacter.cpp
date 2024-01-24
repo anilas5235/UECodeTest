@@ -2,9 +2,8 @@
 
 
 #include "CustomFirstPersonCharacter.h"
-
-#include "KismetTraceUtils.h"
 #include "Camera/CameraComponent.h"
+
 void ACustomFirstPersonCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

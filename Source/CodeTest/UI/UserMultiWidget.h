@@ -7,21 +7,25 @@
 #include "Components/WidgetSwitcher.h"
 #include "UserMultiWidget.generated.h"
 
+
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActiveWindowChanged);
+
 UCLASS(ABSTRACT)
 class CODETEST_API UUserMultiWidget : public UUIWindowWidget
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere,meta=(BindWidget)) UWidgetSwitcher* MyWidgetSwitcher;
+	UPROPERTY(EditAnywhere,meta=(BindWidget),Category="UserMultiWidget") UWidgetSwitcher* MyWidgetSwitcher;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="UserMultiWidget") TArray<TSubclassOf<UUIWindowWidget>> WidgetClasses;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UserMultiWidget") UUIWindowWidget* CurrentlyActiveWidget;		
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly) TArray<TSubclassOf<UUIWindowWidget>> WidgetClasses;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="UserMultiWidget") int StartIndex =-1;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UserMultiWidget") int CurrentlyActiveIndex = 0;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly) int StartIndex =-1;
+	UPROPERTY(BlueprintAssignable,BlueprintCallable,Category="UserMultiWidget") FOnActiveWindowChanged OnActiveWindowChanged;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly) int CurrentlyActiveIndex = -1;
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly) UUIWindowWidget* CurrentlyActiveWidget;		
 	
 protected:
 	TArray<UUIWindowWidget*> CreatedWidgets;
@@ -29,8 +33,8 @@ protected:
 public:
 	virtual void NativeConstruct() override;
 	
-	UFUNCTION(BlueprintCallable) void SwitchWidget(const int Index);
-	UFUNCTION(BlueprintCallable) void SwitchToEmpty();
+	UFUNCTION(BlueprintCallable,Category="UserMultiWidget") void SwitchWidget(const int Index);
+	UFUNCTION(BlueprintCallable,Category="UserMultiWidget") void SwitchToEmpty();
 
 	virtual void OnWindowOpen() override;
 	virtual void OnWindowClose() override;	

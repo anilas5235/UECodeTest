@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UIWindowWidget.h"
-#include "CodeTest/MyCustomDataTypes.h"
+#include "CodeTest/CustomDataTypes/MyCustomDataTypes.h"
 #include "GameFramework/SaveGame.h"
 #include "AudioSettingsWindow.generated.h"
 

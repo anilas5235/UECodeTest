@@ -7,7 +7,7 @@
 #include "UIWindowWidget.generated.h"
 
 UDELEGATE()
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWindowActiveStateChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActiveStateChanged);
 
 UCLASS(ABSTRACT)
 class CODETEST_API UUIWindowWidget : public UUserWidget
@@ -15,12 +15,11 @@ class CODETEST_API UUIWindowWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UIWindowWidget") bool IsActive = true;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UIWindowWidget") UUIWindowWidget* ParentWindowWidget = nullptr;
+	UPROPERTY(BlueprintAssignable,BlueprintCallable,Category="UIWindowWidget") FOnActiveStateChanged OnActiveStateChanged;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UIWindowWidget") bool IsActive;
-	UPROPERTY(BlueprintAssignable,BlueprintCallable) FOnWindowActiveStateChanged OnWindowActiveStateChanged;
-
-public:
-
+public:	
 	UFUNCTION(BlueprintCallable,Category="UIWindowWidget")virtual void OnWindowClose();
 	UFUNCTION(BlueprintCallable,Category="UIWindowWidget")virtual void OnWindowOpen();
 
