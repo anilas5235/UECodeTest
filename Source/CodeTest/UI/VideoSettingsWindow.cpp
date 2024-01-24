@@ -28,7 +28,8 @@ void UVideoSettingsWindow::ChangeResolution(const bool bIncrease)
 void UVideoSettingsWindow::ChangeWindowMode(bool bIncrease)
 {
 	const EWindowMode::Type Parameter = CurrentGameSettings->GetFullscreenMode();
-	const auto NewParameter =static_cast<EWindowMode::Type>(FMath::Clamp(static_cast<uint8>(Parameter) + bIncrease ? 1 : -1, 0, 2));
+	const EWindowMode::Type NewParameter =
+		static_cast<EWindowMode::Type>(FMath::Clamp(static_cast<uint8>(Parameter) + bIncrease ? 1 : -1, 0, 2));
 	if(Parameter == NewParameter) return;	
 	CurrentGameSettings->SetFullscreenMode(NewParameter);
 }
