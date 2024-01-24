@@ -32,8 +32,7 @@ void ACustomFirstPersonCharacter::UpdateLookAtActor()
 
 	if(DebugMode)
 	{			
-		DrawDebugLineTraceSingle(GetWorld(),TraceStart,TraceEnd,EDrawDebugTrace:: ForOneFrame, bHit, CurrentHitResult,
-			TraceColor,TraceHitColor,1);
+		//DrawDebugLineTraceSingle(GetWorld(),TraceStart,TraceEnd,EDrawDebugTrace:: ForOneFrame, bHit, CurrentHitResult,TraceColor,TraceHitColor,1);
 	}
 	 
 	if(AActor* HitActor = CurrentHitResult.GetActor())
