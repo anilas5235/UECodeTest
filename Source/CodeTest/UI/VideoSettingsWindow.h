@@ -13,14 +13,15 @@ class CODETEST_API UVideoSettingsWindow : public UUIWindowWidget
 
 public:
 	
-	UPROPERTY(BlueprintReadOnly,Category="VideoSettingsWindow") UGameUserSettings* CurrentGameSettings;
-	
+	UPROPERTY(BlueprintReadOnly,Category="VideoSettingsWindow") UGameUserSettings* CurrentGameSettings;	
 	UPROPERTY(BlueprintReadOnly,Category="VideoSettingsWindow") TArray<FIntPoint> PossibleResolutions;
-	UPROPERTY(BlueprintReadOnly,Category="VideoSettingsWindow") uint8 CurrentResolutionIndex;	
+	UPROPERTY(BlueprintReadOnly,Category="VideoSettingsWindow") int CurrentResolutionIndex;	
 
 public:
 	virtual void NativeConstruct() override;
-
+    virtual void OnWindowOpen() override;
+	virtual void OnWindowClose() override;
+	
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeResolution(bool bIncrease = true);
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeWindowMode(bool bIncrease = true);
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeVsync(bool bIncrease = true);
@@ -31,8 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void LoadSettings();
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="VideoSettingsWindow") void UpdateUIText();
 
-	virtual void OnWindowOpen() override;
-	virtual void OnWindowClose() override;
+	
 };
 
 

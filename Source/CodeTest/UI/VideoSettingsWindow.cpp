@@ -14,25 +14,25 @@ void UVideoSettingsWindow::NativeConstruct()
 
 void UVideoSettingsWindow::ChangeResolution(const bool bIncrease)
 {
-	if(const auto NewIndex = CurrentResolutionIndex+ bIncrease?1:-1; PossibleResolutions.IsValidIndex(NewIndex))
+	if(const auto NewIndex = CurrentResolutionIndex + (bIncrease?1:-1); PossibleResolutions.IsValidIndex(NewIndex))
 	{
 		CurrentResolutionIndex = NewIndex;
 		CurrentGameSettings->SetScreenResolution(PossibleResolutions[CurrentResolutionIndex]);
-	}
+	}	
 	UpdateUIText();
 }
 
-void UVideoSettingsWindow::ChangeWindowMode(bool bIncrease)
+void UVideoSettingsWindow::ChangeWindowMode(const bool bIncrease)
 {
-	const auto Parameter = CurrentGameSettings->GetFullscreenMode();
-	const auto NewParameter =
-		static_cast<EWindowMode::Type>(FMath::Clamp(static_cast<uint8>(Parameter) + bIncrease ? 1 : -1, 0, sizeof(Parameter)));
-	if(Parameter == NewParameter) return;	
+	const auto Parameter = CurrentGameSettings->GetFullscreenMode();  
+	const auto NewParameter = EWindowMode::ConvertIntToWindowMode(
+		FMath::Clamp(static_cast<int>(Parameter) + (bIncrease ? 1 : -1), 0, 2));	
+	if(Parameter == NewParameter) return;
 	CurrentGameSettings->SetFullscreenMode(NewParameter);
 	UpdateUIText();
 }
 
-void UVideoSettingsWindow::ChangeVsync(bool bIncrease)
+void UVideoSettingsWindow::ChangeVsync(const bool bIncrease)
 {
 	const auto Parameter = CurrentGameSettings->IsVSyncEnabled();
 	if(bIncrease == Parameter)return;
@@ -40,23 +40,21 @@ void UVideoSettingsWindow::ChangeVsync(bool bIncrease)
 	UpdateUIText();
 }
 
-void UVideoSettingsWindow::ChangeOverAllQualityLevel(bool bIncrease)
+void UVideoSettingsWindow::ChangeOverAllQualityLevel(const bool bIncrease)
 {
-	const EPerQualityLevels Parameter = static_cast<EPerQualityLevels>(CurrentGameSettings->GetOverallScalabilityLevel());
-	const auto NewParameter =
-		static_cast<EPerQualityLevels>(FMath::Clamp(static_cast<uint8>(Parameter) + bIncrease ? 1 : -1, 0, sizeof(Parameter)));
-	if(Parameter == NewParameter) return;	
-	CurrentGameSettings->SetOverallScalabilityLevel(static_cast<int>(NewParameter));
+	const auto OldParameter = CurrentGameSettings->GetOverallScalabilityLevel();
+	const auto NewParameter =FMath::Clamp(static_cast<int>(OldParameter) + (bIncrease ? 1 : -1), 0, 4);
+	if(OldParameter == NewParameter) return;	
+	CurrentGameSettings->SetOverallScalabilityLevel(NewParameter);
 	UpdateUIText();
 }
 
-void UVideoSettingsWindow::ChangeFoliageQualityLevel(bool bIncrease)
+void UVideoSettingsWindow::ChangeFoliageQualityLevel(const bool bIncrease)
 {
-	const EPerQualityLevels Parameter = static_cast<EPerQualityLevels>(CurrentGameSettings->GetFoliageQuality());
-	const auto NewParameter =
-		static_cast<EPerQualityLevels>(FMath::Clamp(static_cast<uint8>(Parameter) + bIncrease ? 1 : -1, 0, sizeof(Parameter)));
-	if(Parameter == NewParameter) return;	
-	CurrentGameSettings->SetFoliageQuality(static_cast<int>(NewParameter));
+	const auto OldParameter = CurrentGameSettings->GetFoliageQuality();
+	const auto NewParameter =FMath::Clamp(static_cast<int>(OldParameter) + (bIncrease ? 1 : -1), 0, 4);
+	if(OldParameter == NewParameter) return;
+	CurrentGameSettings->SetFoliageQuality(NewParameter);
 	UpdateUIText();
 }
 
@@ -71,6 +69,11 @@ void UVideoSettingsWindow::LoadSettings()
 {
 	CurrentGameSettings = UGameUserSettings::GetGameUserSettings();
 	CurrentGameSettings->LoadSettings();
+	const auto CurrentRes = CurrentGameSettings->GetScreenResolution();
+	for (int i = 0; i < PossibleResolutions.Num(); ++i)
+	{
+		if(CurrentRes == PossibleResolutions[i]){ CurrentResolutionIndex = i; break;}
+	}
 	UpdateUIText();
 }
 

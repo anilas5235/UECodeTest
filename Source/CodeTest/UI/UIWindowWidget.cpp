@@ -22,7 +22,6 @@ void UUIWindowWidget::ChangeActiveState(const bool NewState, const bool bIgnoreA
 {	
 	if(IsActive == NewState && !bIgnoreActive)return;
 	IsActive = NewState;
-	if(IsActive){SetVisibility(ESlateVisibility::Visible);}
-	else{SetVisibility(ESlateVisibility::Collapsed);}	
+	SetVisibility(IsActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);	
 	if(OnActiveStateChanged.IsBound()) OnActiveStateChanged.Broadcast();
 }
