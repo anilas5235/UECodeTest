@@ -26,6 +26,6 @@ public:
 	UFUNCTION(BlueprintCallable,Category="UIWindowWidget")virtual void OnWindowOpen();
 
 protected:
-	virtual void ChangeActiveState(bool NewState);
+	virtual void ChangeActiveState(bool NewState,bool bIgnoreActive = false);
 	
 };

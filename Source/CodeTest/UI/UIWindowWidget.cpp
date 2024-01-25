@@ -18,10 +18,11 @@ void UUIWindowWidget::OnWindowOpen()
 	SetFocus();
 }
 
-void UUIWindowWidget::ChangeActiveState(bool NewState)
-{
-	if(IsActive == NewState)return;
+void UUIWindowWidget::ChangeActiveState(const bool NewState, const bool bIgnoreActive)
+{	
+	if(IsActive == NewState && !bIgnoreActive)return;
 	IsActive = NewState;
-	OnActiveStateChanged.Broadcast();
-	SetVisibility(IsActive?ESlateVisibility::Visible:ESlateVisibility::Collapsed);
+	if(IsActive){SetVisibility(ESlateVisibility::Visible);}
+	else{SetVisibility(ESlateVisibility::Collapsed);}	
+	if(OnActiveStateChanged.IsBound()) OnActiveStateChanged.Broadcast();
 }

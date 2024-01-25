@@ -9,16 +9,9 @@ void UUserMultiWidget::NativeConstruct()
 	
 	if(WidgetClasses.IsEmpty()){ UE_LOG(LogTemp,Warning,TEXT("MultiWiget: there are no Widget Classes selected!"));return;}	
 
-	for (const auto WidgetClass : WidgetClasses)
-	{
-		const auto NewWidget =Cast<UUIWindowWidget>(CreateWidget(this,WidgetClass));
-		NewWidget->ParentWindowWidget = this;
-		CreatedWidgets.Add(NewWidget);
-		MyWidgetSwitcher->AddChild(NewWidget);
-	}
-
-	if(CurrentlyActiveIndex <-1 || CurrentlyActiveIndex >= CreatedWidgets.Num()){StartIndex =-1;}
-	else{SwitchWidget(StartIndex);}	
+	CreateChildWindows();
+	
+	SwitchWidget(StartIndex);
 }
 
 void UUserMultiWidget::SwitchWidget(const int Index)
@@ -26,10 +19,10 @@ void UUserMultiWidget::SwitchWidget(const int Index)
 	if(Index <-1 || Index >= CreatedWidgets.Num() || Index == CurrentlyActiveIndex)return;
 
 	if(CurrentlyActiveWidget) CurrentlyActiveWidget->OnWindowClose();	
-
-	if(Index <0){ChangeActiveState(false);}	
-	if(CurrentlyActiveIndex <0){ChangeActiveState(true);}	
-
+	
+	if(Index < 0){ChangeActiveState(false);}	
+	else if(CurrentlyActiveIndex < 0){ChangeActiveState(true);}
+	
 	CurrentlyActiveIndex = Index;
 
 	if(CurrentlyActiveIndex >=0)
@@ -42,6 +35,8 @@ void UUserMultiWidget::SwitchWidget(const int Index)
 	{
 		CurrentlyActiveWidget = nullptr;		
 	}
+
+	//UE_LOG(LogTemp,Warning,TEXT("%s switched to %i Window"),*GetNameSafe(this),CurrentlyActiveIndex);
 	
 	OnActiveWindowChanged.Broadcast();
 }
@@ -60,5 +55,16 @@ void UUserMultiWidget::OnWindowOpen()
 void UUserMultiWidget::OnWindowClose()
 {
 	Super::OnWindowClose();
+}
+
+void UUserMultiWidget::CreateChildWindows()
+{
+	for (const auto WidgetClass : WidgetClasses)
+	{
+		const auto NewWidget =Cast<UUIWindowWidget>(CreateWidget(this,WidgetClass));
+		NewWidget->ParentWindowWidget = this;
+		CreatedWidgets.Add(NewWidget);
+		MyWidgetSwitcher->AddChild(NewWidget);
+	}
 }
 

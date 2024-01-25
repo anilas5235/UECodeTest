@@ -29,11 +29,9 @@ void ACustomFirstPersonCharacter::UpdateLookAtActor()
 
 	const bool bHit = GetWorld() ->	LineTraceSingleByObjectType(OUT CurrentHitResult,TraceStart,TraceEnd,FCollisionObjectQueryParams(CheckedChannels),TraceParams);
 
-	if(DebugMode)
-	{			
-		//DrawDebugLineTraceSingle(GetWorld(),TraceStart,TraceEnd,EDrawDebugTrace:: ForOneFrame, bHit, CurrentHitResult,TraceColor,TraceHitColor,1);
-	}
-	 
+	//UnComment to Debug Line Trace
+	//DrawDebugLineTraceSingle(GetWorld(),TraceStart,TraceEnd,EDrawDebugTrace:: ForOneFrame, bHit, CurrentHitResult,TraceColor,TraceHitColor,1);
+		 
 	if(AActor* HitActor = CurrentHitResult.GetActor())
 	{
 		LookAtActor = HitActor;

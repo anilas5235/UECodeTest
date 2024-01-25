@@ -7,7 +7,6 @@
 #include "UI/UserMultiWidget.h"
 #include "CustomHUDBase.generated.h"
 
-
 UCLASS(Abstract)
 class CODETEST_API ACustomHUDBase : public AHUD
 {
@@ -23,7 +22,10 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void UpdateUIState();
+	UFUNCTION() void UpdateUIState();
+
+public:
+	UFUNCTION(BlueprintCallable,Category="CustomHUDBase") void SwitchMainWidget(const int Index);
 
 protected:
 	void SetupWidgets();

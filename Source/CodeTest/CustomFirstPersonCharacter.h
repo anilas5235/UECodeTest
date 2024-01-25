@@ -11,8 +11,7 @@ class CODETEST_API ACustomFirstPersonCharacter : public ATP_FirstPersonCharacter
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="LookAtData") bool DebugMode = false;
+public:	
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="LookAtData")float MaxDetectionDistance = 1000;
 	UPROPERTY(EditAnywhere,Category="LookAtData") TArray<TEnumAsByte<EObjectTypeQuery>> CheckedChannels;

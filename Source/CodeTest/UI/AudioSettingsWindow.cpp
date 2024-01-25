@@ -8,6 +8,7 @@
 
 void UAudioSettingsWindow::NativeConstruct()
 {
+	LoadSettings();	
 	Super::NativeConstruct();
 
 	auto MasterKey =FName("Master");
@@ -15,17 +16,13 @@ void UAudioSettingsWindow::NativeConstruct()
 	{
 		const auto Data = AudioSliderData[MasterKey];
 		UGameplayStatics::SetBaseSoundMix(GetWorld(),Data.SoundMixer);			
-	}	
+	}
 
-	LoadSettings();	
 }
 
 void UAudioSettingsWindow::NativePreConstruct()
 {
-	for (auto Name : StandardSliders)
-	{
-		AudioSliderData.FindOrAdd(Name);
-	}
+	for (auto Name : StandardSliders)	{AudioSliderData.FindOrAdd(Name);}
 	
 	Super::NativePreConstruct();
 }
@@ -42,16 +39,6 @@ void UAudioSettingsWindow::OnWindowClose()
 	SaveSettings();
 }
 
-void UAudioSettingsWindow::SubToSliderEvents()
-{
-	for (const auto SliderData : AudioSliderData)
-	{
-		if(!SliderData.Value.Slider){continue;}
-		const auto Slider = Cast<USlider>(SliderData.Value.Slider);
-		Slider->OnValueChanged.AddDynamic(this,&UAudioSettingsWindow::UpdateSavedValuesFromSliders);
-	}
-}
-
 void UAudioSettingsWindow::LoadSettings()
 {
 	if(UGameplayStatics:: DoesSaveGameExist(SaveSlotName,0))
@@ -62,7 +49,7 @@ void UAudioSettingsWindow::LoadSettings()
 	{
 		CurrentSave = Cast<UAudioSave>( UGameplayStatics:: CreateSaveGameObject(UAudioSave::StaticClass()));
 		SaveSettings();
-	}
+	}	
 }
 
 void UAudioSettingsWindow::SaveSettings() const
@@ -70,42 +57,20 @@ void UAudioSettingsWindow::SaveSettings() const
 	UGameplayStatics:: SaveGameToSlot(CurrentSave,SaveSlotName,0);
 }
 
-void UAudioSettingsWindow::SetSlidersToSavedValues()
+void UAudioSettingsWindow::SetAudioSliderVolume(FName Name, float Value)
 {
-	for (const auto SliderData : AudioSliderData)
+	if(!CurrentSave->SliderValues.Contains(Name)){ CurrentSave->SliderValues.Add(Name,Value);}
+	else{CurrentSave->SliderValues[Name] = Value;}
+
+	if(AudioSliderData.Contains(Name))
 	{
-		const auto Slider = Cast<USlider>(SliderData.Value.Slider);
-		auto Key =SliderData.Key;
-		if(!Slider) {UE_LOG(LogTemp,Warning,TEXT("Slider for %s not found"),*Key.ToString()) continue;}
-		
-		if(!CurrentSave->SliderValues.Contains(Key)){ CurrentSave->SliderValues.Add(Key,.8f);}
-
-		Slider->SetValue(CurrentSave->SliderValues[Key]);
-		Slider->SetMaxValue(MaxSliderValue);
-		Slider->SetMinValue(MinSliderValue);
+		const auto Data =AudioSliderData[Name];
+		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),Data.SoundMixer,Data.SoundClass,Value);		
 	}
 }
 
-void UAudioSettingsWindow::SetMixersToSavedValues()
+float UAudioSettingsWindow::GetAudioSliderVolume(FName Name)
 {
-	for (const auto SliderData : AudioSliderData)
-	{		
-		if(!SliderData.Value.SoundClass || !SliderData.Value.SoundMixer){continue;}		
-		if(!CurrentSave->SliderValues.Contains(SliderData.Key)){ CurrentSave->SliderValues.Add(SliderData.Key,.8f);}		
-		
-		UGameplayStatics:: SetSoundMixClassOverride(GetWorld(),SliderData.Value.SoundMixer,SliderData.Value.SoundClass,
-			CurrentSave->SliderValues[SliderData.Key]);
-	}
-}
-
-void UAudioSettingsWindow::UpdateSavedValuesFromSliders(float Value)
-{
-	for (const auto SliderData : AudioSliderData)
-	{		
-		if(!SliderData.Value.Slider){continue;}
-
-		const float SliderValue = Cast<USlider>(SliderData.Value.Slider)->GetValue();
-		if(!CurrentSave->SliderValues.Contains(SliderData.Key)){ CurrentSave->SliderValues.Add(SliderData.Key,SliderValue);}
-		else{CurrentSave->SliderValues[SliderData.Key] = SliderValue;}	
-	}
+	if(!CurrentSave->SliderValues.Contains(Name))return 0;
+	return  CurrentSave->SliderValues[Name];
 }

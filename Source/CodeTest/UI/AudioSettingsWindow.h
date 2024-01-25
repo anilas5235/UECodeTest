@@ -24,12 +24,12 @@ class CODETEST_API UAudioSettingsWindow : public UUIWindowWidget
 	GENERATED_BODY()
 
 public:	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly) TMap<FName,FAudioSliderData> AudioSliderData;	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite) TMap<FName,FAudioSliderData> AudioSliderData;	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly) UAudioSave* CurrentSave;
+	UPROPERTY(BlueprintReadWrite) TArray<FName> StandardSliders = {FName("Master"),FName("Music"),FName("Effects"),FName("Ambience")};
 
 protected:
 	inline static const FString SaveSlotName = FString("AudioWindowSaveSettings");
-	inline static const TArray<FName> StandardSliders = {FName("Master"),FName("Music"),FName("Effects"),FName("Ambience")};
 	const float MaxSliderValue =1;
 	const float MinSliderValue =0;
 
@@ -40,13 +40,12 @@ public:
 	virtual void OnWindowOpen() override;
 	virtual void OnWindowClose() override;
 
-protected:
-	void SubToSliderEvents();
-	void LoadSettings();
-	void SaveSettings() const;
-	void SetSlidersToSavedValues();
-	void SetMixersToSavedValues();
-	void UpdateSavedValuesFromSliders(float Value);
+	UFUNCTION(BlueprintCallable,Category="AudioSettingsWindow") void LoadSettings();
+	UFUNCTION(BlueprintCallable,Category="AudioSettingsWindow") void SaveSettings() const;	
+	UFUNCTION(BlueprintCallable,Category="AudioSettingsWindow") void SetAudioSliderVolume(FName Name,float Value);
+	UFUNCTION(BlueprintCallable,Category="AudioSettingsWindow") float GetAudioSliderVolume(FName Name);
+
+protected:	
 	
 };
 

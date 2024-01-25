@@ -22,8 +22,7 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UserMultiWidget") UUIWindowWidget* CurrentlyActiveWidget;		
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="UserMultiWidget") int StartIndex =-1;
-	//UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UserMultiWidget")
-	int CurrentlyActiveIndex = -9999;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="UserMultiWidget") int CurrentlyActiveIndex = -9999;
 
 	UPROPERTY(BlueprintAssignable,BlueprintCallable,Category="UserMultiWidget") FOnActiveWindowChanged OnActiveWindowChanged;
 
@@ -38,5 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable,Category="UserMultiWidget") void SwitchToEmpty();
 
 	virtual void OnWindowOpen() override;
-	virtual void OnWindowClose() override;	
+	virtual void OnWindowClose() override;
+
+protected:
+	void CreateChildWindows();
 };

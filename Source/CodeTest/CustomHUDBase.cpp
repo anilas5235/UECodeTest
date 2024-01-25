@@ -11,6 +11,7 @@ void ACustomHUDBase::BeginPlay()
 
 void ACustomHUDBase::UpdateUIState()
 {
+	if(!MainMultiWidgetRunTimeInstance) return;
 	const bool NewState =MainMultiWidgetRunTimeInstance->IsActive;
 	if(NewState == IsMainUIActive) return;
 	IsMainUIActive = NewState;
@@ -29,6 +30,12 @@ void ACustomHUDBase::UpdateUIState()
 	
 }
 
+void ACustomHUDBase::SwitchMainWidget(const int Index)
+{
+	if(!MainMultiWidgetRunTimeInstance) return;
+	MainMultiWidgetRunTimeInstance->SwitchWidget(Index);
+}
+
 void ACustomHUDBase::SetupWidgets()
 {
 	if(!MainMultiWidgetClass)
@@ -37,5 +44,6 @@ void ACustomHUDBase::SetupWidgets()
 	MainMultiWidgetRunTimeInstance = Cast<UUserMultiWidget>(CreateWidget(GetOwningPlayerController(),MainMultiWidgetClass,FName("MainMultiWidget")));
 	MainMultiWidgetRunTimeInstance->AddToViewport(1);
 
+	UpdateUIState();
 	MainMultiWidgetRunTimeInstance->OnActiveWindowChanged.AddDynamic(this,&ACustomHUDBase::UpdateUIState);
 }
