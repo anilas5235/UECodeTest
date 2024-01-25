@@ -2,27 +2,19 @@
 
 
 #include "AudioSettingsWindow.h"
-
 #include "Kismet/GameplayStatics.h"
+
 
 
 void UAudioSettingsWindow::NativeConstruct()
 {
+	Super::NativeConstruct();	
 	LoadSettings();	
-	Super::NativeConstruct();
-
-	auto MasterKey =FName("Master");
-	if(AudioSliderData.Contains(MasterKey))
-	{
-		const auto Data = AudioSliderData[MasterKey];
-		UGameplayStatics::SetBaseSoundMix(GetWorld(),Data.SoundMixer);			
-	}
-
 }
 
 void UAudioSettingsWindow::NativePreConstruct()
 {
-	for (auto Name : StandardSliders)	{AudioSliderData.FindOrAdd(Name);}
+	for (auto Name : SliderNames)	{AudioSliderData.FindOrAdd(Name);}
 	
 	Super::NativePreConstruct();
 }
@@ -39,27 +31,30 @@ void UAudioSettingsWindow::OnWindowClose()
 	SaveSettings();
 }
 
-void UAudioSettingsWindow::LoadSettings()
+void UAudioSettingsWindow::LoadSettings(const int UserIndex)
 {
-	if(UGameplayStatics:: DoesSaveGameExist(SaveSlotName,0))
+	if(UGameplayStatics::DoesSaveGameExist(SaveSlotName,UserIndex))
 	{
-		CurrentSave = Cast<UAudioSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName,0));
+		CurrentSave = Cast<UAudioSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName,UserIndex));
 	}
 	else
 	{
 		CurrentSave = Cast<UAudioSave>( UGameplayStatics:: CreateSaveGameObject(UAudioSave::StaticClass()));
-		SaveSettings();
-	}	
+		SaveSettings(UserIndex);
+	}
+	SetSliderValues();
 }
 
-void UAudioSettingsWindow::SaveSettings() const
+void UAudioSettingsWindow::SaveSettings(const int UserIndex) const
 {
-	UGameplayStatics:: SaveGameToSlot(CurrentSave,SaveSlotName,0);
+	if(!CurrentSave){UE_LOG(LogTemp,Error,TEXT("%s CurrenSave is invaild"),*GetNameSafe(this));}
+	UGameplayStatics:: SaveGameToSlot(CurrentSave,SaveSlotName,UserIndex);	
 }
 
-void UAudioSettingsWindow::SetAudioSliderVolume(FName Name, float Value)
+void UAudioSettingsWindow::SetAudioSliderVolumePerName(FName Name, float Value)
 {
-	if(!CurrentSave->SliderValues.Contains(Name)){ CurrentSave->SliderValues.Add(Name,Value);}
+	if(!CurrentSave){UE_LOG(LogTemp,Error,TEXT("%s CurrenSave is invaild"),*GetNameSafe(this));}
+	if(!(CurrentSave->SliderValues.Contains(Name))){ CurrentSave->SliderValues.Add(Name,Value);}
 	else{CurrentSave->SliderValues[Name] = Value;}
 
 	if(AudioSliderData.Contains(Name))
@@ -67,10 +62,41 @@ void UAudioSettingsWindow::SetAudioSliderVolume(FName Name, float Value)
 		const auto Data =AudioSliderData[Name];
 		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),Data.SoundMixer,Data.SoundClass,Value);		
 	}
+
+	UE_LOG(LogTemp,Warning,TEXT("%s Log CurrentSavedValues"),*GetNameSafe(this))
+	for (auto& Elem : CurrentSave->SliderValues)
+	{
+		UE_LOG(LogTemp,Warning,	TEXT("(%s, \"%f\")\n"),*Elem.Key.ToString(),Elem.Value);
+	}
 }
 
-float UAudioSettingsWindow::GetAudioSliderVolume(FName Name)
+void UAudioSettingsWindow::SetAudioSliderVolumePerIndex(const int Index, const float Value)
 {
-	if(!CurrentSave->SliderValues.Contains(Name))return 0;
+	if(Index < 0 || Index>= SliderNames.Num())
+	{
+		UE_LOG(LogTemp,Error,TEXT("%s Index is not vaild"),*GetNameSafe(this));
+		return;
+	}
+	SetAudioSliderVolumePerName(SliderNames[Index],Value);
+}
+
+float UAudioSettingsWindow::GetAudioSliderVolumePerName(FName Name)
+{
+	if(!CurrentSave){UE_LOG(LogTemp,Error,TEXT("%s CurrenSave is invaild"),*GetNameSafe(this)); return -1;}
+	if(!CurrentSave->SliderValues.Contains(Name)){ CurrentSave->SliderValues.Add(Name,.8f);}		
 	return  CurrentSave->SliderValues[Name];
+}
+
+float UAudioSettingsWindow::GetAudioSliderVolumePerIndex(int Index)
+{
+	if(Index < 0 || Index>= SliderNames.Num())
+	{
+		UE_LOG(LogTemp,Error,TEXT("%s Index is not vaild"),*GetNameSafe(this));
+		return -1;
+	}
+	return 	GetAudioSliderVolumePerName(SliderNames[Index]);
+}
+
+void UAudioSettingsWindow::SetSliderValues_Implementation()
+{
 }

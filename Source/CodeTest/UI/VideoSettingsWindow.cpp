@@ -8,7 +8,7 @@
 void UVideoSettingsWindow::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UKismetSystemLibrary::GetSupportedFullscreenResolutions(PossibleResolutions);
+	UKismetSystemLibrary::GetSupportedFullscreenResolutions(PossibleResolutions);	
 	LoadSettings();
 }
 
