@@ -40,22 +40,79 @@ void UVideoSettingsWindow::ChangeVsync(const bool bIncrease)
 	UpdateUIText();
 }
 
-void UVideoSettingsWindow::ChangeOverAllQualityLevel(const bool bIncrease)
+void UVideoSettingsWindow::ChangeVideoQualityLevel(const EVideoQualityOptions Option, const bool bIncrease)
 {
-	const auto OldParameter = CurrentGameSettings->GetOverallScalabilityLevel();
-	const auto NewParameter =FMath::Clamp(static_cast<int>(OldParameter) + (bIncrease ? 1 : -1), 0, 4);
-	if(OldParameter == NewParameter) return;	
-	CurrentGameSettings->SetOverallScalabilityLevel(NewParameter);
-	UpdateUIText();
+	int NewParameter =0;	
+	switch (Option) {
+	case EVideoQualityOptions::OverAll:		
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetOverallScalabilityLevel(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetOverallScalabilityLevel(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Anti_Aliasing:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetAntiAliasingQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetAntiAliasingQuality(NewParameter);
+		}		
+		break;
+	case EVideoQualityOptions::Post_Processing:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetPostProcessingQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetPostProcessingQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Shadows:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetShadowQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetShadowQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Global_Illumination:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetGlobalIlluminationQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetGlobalIlluminationQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Reflections:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetReflectionQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetReflectionQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Textures:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetTextureQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetTextureQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Effects:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetVisualEffectQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetVisualEffectQuality(NewParameter);
+		}
+		break;
+	case EVideoQualityOptions::Foliage:		
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetFoliageQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetFoliageQuality(NewParameter);
+		}		
+		break;
+	case EVideoQualityOptions::Shading:
+		if(CalculateNewVideoQualityVal(CurrentGameSettings->GetShadingQuality(),bIncrease,NewParameter))
+		{
+			CurrentGameSettings->SetShadingQuality(NewParameter);
+		}
+		break;
+	default: ;
+	}
+	UpdateUIText();	
 }
 
-void UVideoSettingsWindow::ChangeFoliageQualityLevel(const bool bIncrease)
+bool UVideoSettingsWindow::CalculateNewVideoQualityVal(const int OldVal, const bool bIncrease, int& NewVal)
 {
-	const auto OldParameter = CurrentGameSettings->GetFoliageQuality();
-	const auto NewParameter =FMath::Clamp(static_cast<int>(OldParameter) + (bIncrease ? 1 : -1), 0, 4);
-	if(OldParameter == NewParameter) return;
-	CurrentGameSettings->SetFoliageQuality(NewParameter);
-	UpdateUIText();
+	NewVal = FMath::Clamp(OldVal + (bIncrease ? 1 : -1), 0, 4);
+	return OldVal != NewVal;
 }
 
 void UVideoSettingsWindow::ApplyAndSave()

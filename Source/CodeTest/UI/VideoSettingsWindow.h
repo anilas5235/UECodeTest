@@ -6,6 +6,21 @@
 #include "UIWindowWidget.h"
 #include "VideoSettingsWindow.generated.h"
 
+UENUM(BlueprintType)
+enum class EVideoQualityOptions : uint8
+{
+	OverAll,
+	Anti_Aliasing,
+	Post_Processing,
+	Shadows,
+	Global_Illumination,
+	Reflections,
+	Textures,
+	Effects,	
+	Foliage,
+	Shading,	
+};
+
 UCLASS(Abstract)
 class CODETEST_API UVideoSettingsWindow : public UUIWindowWidget
 {
@@ -25,14 +40,13 @@ public:
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeResolution(bool bIncrease = true);
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeWindowMode(bool bIncrease = true);
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeVsync(bool bIncrease = true);
-	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeOverAllQualityLevel(bool bIncrease = true);
-	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeFoliageQualityLevel(bool bIncrease = true);
+	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ChangeVideoQualityLevel
+	(EVideoQualityOptions Option = EVideoQualityOptions::OverAll,bool bIncrease = true);	
 
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void ApplyAndSave();
 	UFUNCTION(BlueprintCallable,Category="VideoSettingsWindow") void LoadSettings();
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category="VideoSettingsWindow") void UpdateUIText();
 
-	
+protected:
+	static bool CalculateNewVideoQualityVal(int OldVal ,bool bIncrease, int& NewVal);	
 };
-
-
